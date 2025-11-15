@@ -16,11 +16,11 @@ class TodoTasksRepository(ABC):
         pass
 
     @abstractmethod
-    async def add_todo_task(self, user_id: str, todo_task: NewTodoTask) -> None:
+    async def add_todo_task(self, user_id: str, todo_task: NewTodoTask) -> TodoTask:
         pass
 
     @abstractmethod
-    async def mark_todo_task_as_done(self, uuid: str) -> None:
+    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
         pass
 
     @abstractmethod

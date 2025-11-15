@@ -1,3 +1,5 @@
+from typing import Any, Coroutine
+
 from src.domain.tasks.exception.todo_task_change import TodoTaskChangeException
 from src.domain.tasks.exception.todo_task_fetch import TodoTaskFetchException
 from src.domain.tasks.exception.todo_task_not_found import TodoTaskNotFoundException
@@ -23,17 +25,14 @@ class TodoTasksService:
             raise TodoTaskFetchException()
         raise TodoTaskNotFoundException()
 
-    async def add_todo_task(self, user_id: str, todo_task: NewTodoTask) -> None:
+    async def add_todo_task(self, user_id: str, todo_task: NewTodoTask) -> TodoTask:
         try:
-            await self._todo_tasks_repository.add_todo_task(user_id, todo_task)
+            return await self._todo_tasks_repository.add_todo_task(user_id, todo_task)
         except Exception:
             raise TodoTaskChangeException()
 
-    async def mark_todo_task_as_done(self, uuid: str) -> None:
-        try:
-            await self._todo_tasks_repository.mark_todo_task_as_done(uuid)
-        except Exception:
-            raise TodoTaskChangeException()
+    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
+        return await self._todo_tasks_repository.mark_todo_task_as_done(uuid)
 
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
         try:
