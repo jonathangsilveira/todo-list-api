@@ -7,7 +7,7 @@ from src.domain.tasks.model.todo_task_status import TodoTaskStatus
 from src.infra.database.sqlite.model.base_model import BaseEntity
 
 
-class UserModel(BaseEntity):
+class UserEntity(BaseEntity):
     __tablename__ = "users"
 
     id = Column(String, primary_key=True, unique=True)
@@ -23,7 +23,7 @@ class UserModel(BaseEntity):
         self.password = password
         self.active = active
 
-class TodoTaskModel(BaseEntity):
+class TodoTaskEntity(BaseEntity):
     __tablename__ = "todo_tasks"
 
     id = Column(String, primary_key=True, unique=True)
