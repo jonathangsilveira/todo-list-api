@@ -26,12 +26,15 @@ async def signup(full_name: str = Form(), email: str = Form(),
                  password: str = Form(), auth_service: AuthService = Depends(get_auth_service)):
     try:
         await auth_service.register_new_user(full_name=full_name, email=email, password=password)
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content={"message": "User created!"}
+        )
     except Exception:
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Something went wrong during sign-up"
         )
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "User created!"})
 
 @router.post(path="/signin", status_code=status.HTTP_200_OK)
 async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
@@ -40,6 +43,10 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
         auth_credentials = AuthCredentials(email=form_data.username, password=form_data.password)
         auth_token = await auth_service.authorize_login(auth_credentials=auth_credentials)
         auth_token_response = AuthTokenResponse.from_domain(auth_token)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=auth_token_response.model_dump(exclude_none=True)
+        )
     except UserNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -58,7 +65,3 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
             detail="Something went wrong!",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content=auth_token_response.model_dump(exclude_none=True)
-    )
