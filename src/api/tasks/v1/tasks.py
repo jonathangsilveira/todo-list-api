@@ -33,6 +33,7 @@ async def get_all_tasks(authorized_user: User = Depends(get_authorized_user),
 
 @router.get(path="/task/{uuid}", status_code=status.HTTP_200_OK, response_model=TaskResponse)
 async def get_todo_task_by_uuid(todo_task_uuid: str = Path(alias="uuid"),
+                                authorized_user: User = Depends(get_authorized_user),
                                 todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
     try:
         todo_task = await todo_tasks_service.get_todo_task_by_uuid(uuid=todo_task_uuid)
@@ -62,6 +63,7 @@ async def add_todo_task(new_todo_task_input: NewTodoTaskInput,
 
 @router.patch(path="/task/{uuid}/done", status_code=status.HTTP_200_OK, response_model=TaskResponse)
 async def mark_todo_task_as_done(todo_task_uuid: str = Path(alias="uuid"),
+                                 authorized_user: User = Depends(get_authorized_user),
                                  todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
     try:
         updated_task = await todo_tasks_service.mark_todo_task_as_done(uuid=todo_task_uuid)
@@ -76,6 +78,7 @@ async def mark_todo_task_as_done(todo_task_uuid: str = Path(alias="uuid"),
 
 @router.delete(path="/task/{uuid}/remove", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_todo_task(todo_task_uuid: str = Path(alias="uuid"),
+                           authorized_user: User = Depends(get_authorized_user),
                            todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
     try:
         await todo_tasks_service.remove_todo_task_by_uuid(uuid=todo_task_uuid)
