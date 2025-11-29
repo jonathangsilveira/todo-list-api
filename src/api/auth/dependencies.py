@@ -10,7 +10,7 @@ from src.domain.auth.service.auth_service import AuthService
 from src.domain.password.service.password_service import PasswordService
 from src.domain.token.service.token_service import TokenService
 from src.domain.user.exception.user_not_found import UserNotFoundException
-from src.domain.user.model.user import User
+from src.domain.user.model.user_models import User
 from src.domain.user.service.user_service import UserService
 from src.infra.password.bcrypt_password_hasher import BcryptPasswordHasher
 from src.infra.user.repository.in_memory_user_repository import InMemoryUserRepository
