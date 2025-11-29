@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from starlette import status
 
+from src.api.shared.dependencies import get_user_service
 from src.domain.auth.exceptions.expired_access_token import ExpiredAccessTokenException
 from src.domain.auth.exceptions.invalid_access_token import InvalidAccessTokenException
 from src.domain.auth.service.auth_service import AuthService
@@ -18,10 +19,9 @@ from src.infra.user.repository.in_memory_user_repository import InMemoryUserRepo
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/v1/signin")
 
 
-def get_auth_service() -> AuthService:
+def get_auth_service(user_service: UserService = Depends(get_user_service)) -> AuthService:
     password_service = get_password_service()
     token_service = get_token_service()
-    user_service = get_user_service()
     return AuthService(
         password_service=password_service,
         token_service=token_service,
