@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.domain.user.model.new_user import NewUser
-from src.domain.user.model.user import User
+from src.domain.user.model.user_models import User, UserCreation, UserUpdate
 
 
 class UserRepository(ABC):
 
     @abstractmethod
-    async def insert_user(self, user: NewUser) -> None:
+    async def insert_user(self, user_creation: UserCreation) -> User:
+        ...
+
+    @abstractmethod
+    async def set_user(self, user_update: UserUpdate) -> User:
         ...
 
     @abstractmethod

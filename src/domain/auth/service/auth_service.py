@@ -11,8 +11,7 @@ from src.domain.token.model.token import Token
 from src.domain.token.model.token_status import TokenStatus
 from src.domain.token.service.token_service import TokenService
 from src.domain.user.exception.user_not_found import UserNotFoundException
-from src.domain.user.model.new_user import NewUser
-from src.domain.user.model.user import User
+from src.domain.user.model.user_models import User, UserCreation
 from src.domain.user.service.user_service import UserService
 
 
@@ -40,7 +39,12 @@ class AuthService:
 
     async def register_new_user(self, full_name: str, email: str, password: str):
         hashed_password = self._password_service.generate_hash(password)
-        new_user = NewUser(full_name=full_name, email=email, password=hashed_password)
+        new_user = UserCreation(
+            full_name=full_name,
+            email=email,
+            password=hashed_password,
+            is_active=True
+        )
         await self._user_service.new_user(new_user)
 
     async def get_current_user_by_access_token(self, access_token: str) -> User:
