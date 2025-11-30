@@ -34,16 +34,16 @@ class TodoTaskEntity(BaseEntity):
 
     id = Column(String, primary_key=True, unique=True)
     title = Column(String(100), nullable=False)
-    status = Column(String, nullable=False, default=TodoTaskStatus.PENDING.value)
+    status = Column(String, nullable=False, default=TodoTaskStatus.PENDING.value())
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, unique=False, nullable=False)
-    updated_at = Column(DateTime, unique=False, nullable=False)
+    updated_at = Column(DateTime, unique=False, nullable=True)
     last_sync_at = Column(DateTime, unique=False, nullable=True)
 
     def __init__(self, id: str, title: str,
                  status: str, owner_id: str,
-                 created_at: datetime.datetime, updated_at: datetime.datetime,
-                 last_sync_at: Optional[datetime.datetime]):
+                 created_at: datetime.datetime, updated_at: Optional[datetime.datetime] = None,
+                 last_sync_at: Optional[datetime.datetime] = None):
         self.id = id
         self.title = title
         self.status = status
