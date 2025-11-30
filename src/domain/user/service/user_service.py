@@ -12,8 +12,8 @@ class UserService:
     def __init__(self, user_repository: UserRepository) -> None:
         self._user_repository = user_repository
 
-    async def new_user(self, new_user: UserCreation) -> User:
-        return await self._user_repository.insert_user(new_user)
+    async def new_user(self, user_creation: UserCreation) -> User:
+        return await self._user_repository.insert_user(user_creation)
 
     async def update_user(self, user_update: UserUpdate) -> User:
         return await self._user_repository.set_user(user_update)
