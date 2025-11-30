@@ -14,7 +14,7 @@ from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user_models import User
 from src.domain.user.service.user_service import UserService
 from src.infra.password.bcrypt_password_hasher import BcryptPasswordHasher
-from src.infra.user.repository.in_memory_user_repository import InMemoryUserRepository
+from src.infra.user.adapter.repository.in_memory_user_repository import InMemoryUserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/v1/signin")
 

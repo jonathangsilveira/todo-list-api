@@ -4,7 +4,7 @@ from starlette.requests import Request
 from src.domain.user.repository.user_repository import UserRepository
 from src.domain.user.service.user_service import UserService
 from src.infra.database.sqlite.session.async_session_factory import AsyncSessionFactory
-from src.infra.user.adapter.local_users_repository import LocalUsersRepository
+from src.infra.user.adapter.repository.local_users_repository import LocalUsersRepository
 
 
 def get_async_session_factory(request: Request) -> AsyncSessionFactory:
