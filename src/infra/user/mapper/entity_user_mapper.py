@@ -36,7 +36,7 @@ class EntityUserMapper:
             full_name=user_entity.full_name,
             email=user_entity.email,
             password=user_entity.password,
-            is_active=user_entity.is_active,
+            is_active=user_entity.active,
             created_at=user_entity.created_at,
             last_update_at=user_entity.last_update_at
         )
