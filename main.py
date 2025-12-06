@@ -6,5 +6,6 @@ if __name__ == "__main__":
         app="src.app:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        log_config="log_config.yaml",
+        reload=True
     )
