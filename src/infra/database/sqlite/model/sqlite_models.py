@@ -34,7 +34,7 @@ class TodoTaskEntity(BaseEntity):
 
     id = Column(String, primary_key=True, unique=True)
     title = Column(String(100), nullable=False)
-    status = Column(String, nullable=False, default=TodoTaskStatus.PENDING.value())
+    status = Column(String, nullable=False, default=TodoTaskStatus.PENDING.value)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, unique=False, nullable=False)
     updated_at = Column(DateTime, unique=False, nullable=True)
