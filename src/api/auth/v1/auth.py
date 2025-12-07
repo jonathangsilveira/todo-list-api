@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 from starlette.responses import JSONResponse
 
-from src.api.auth.dependencies import get_auth_service
+from src.api.auth.dependencies import get_auth_service, oauth2_scheme
 from src.api.auth.v1.response.auth_token_response import AuthTokenResponse
 from src.domain.auth.model.auth_credentials import AuthCredentials
 from src.domain.auth.service.auth_service import AuthService
@@ -62,3 +62,15 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
         status_code=status.HTTP_200_OK,
         content=auth_token_response.model_dump(exclude_none=True)
     )
+
+
+@router.delete(path="/signout", status_code=status.HTTP_204_NO_CONTENT)
+async def signout(access_token: str = Depends(oauth2_scheme), auth_service: AuthService = Depends(get_auth_service)):
+    try:
+        await auth_service.signout(access_token=access_token)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Something went wrong!",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

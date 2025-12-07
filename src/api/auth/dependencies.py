@@ -13,6 +13,7 @@ from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user import User
 from src.domain.user.service.user_service import UserService
 from src.infra.password.bcrypt_password_hasher import BcryptPasswordHasher
+from src.infra.token.repository.in_memory_token_denylist_repository import InMemoryTokenDenylistRepository
 from src.infra.user.repository.in_memory_user_repository import InMemoryUserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/v1/signin")
@@ -27,6 +28,7 @@ def get_auth_service() -> AuthService:
         token_service=token_service,
         user_service=user_service
     )
+
 
 async def get_authorized_user(access_token: str = Depends(oauth2_scheme),
                               auth_service: AuthService = Depends(get_auth_service)) -> User:
@@ -45,13 +47,16 @@ async def get_authorized_user(access_token: str = Depends(oauth2_scheme),
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+
 def get_password_service() -> PasswordService:
     salt_length = int(os.getenv("GEN_SALT_ROUNDS", 9))
     return PasswordService(hasher=BcryptPasswordHasher(), salt_length=salt_length)
 
+
 def get_token_service() -> TokenService:
     secret_key = os.getenv("AUTH_SECRET_KEY")
-    return TokenService(secret_key=secret_key)
+    return TokenService(secret_key=secret_key, denylist_repository=InMemoryTokenDenylistRepository())
+
 
 def get_user_service() -> UserService:
     return UserService(user_repository=InMemoryUserRepository())
