@@ -6,6 +6,7 @@ setup_venv:
 # Requirements
 setup_requirements:
 	pip install -r requirements/requirements.txt
+	pip install -r requirements/requirements-test.txt
 
 # Dot env
 setup_dotenv:
