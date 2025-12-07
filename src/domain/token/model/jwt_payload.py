@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass(eq=True, frozen=True, slots=True)
 class JwtPayload:
     sub: str
     exp: datetime
