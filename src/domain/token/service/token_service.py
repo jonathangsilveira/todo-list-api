@@ -1,3 +1,4 @@
+from datetime import timedelta
 from logging import getLogger
 
 import jwt
@@ -29,7 +30,7 @@ class TokenService:
                 "jti": jwt_payload.jti
             }
             jwt_token = jwt.encode(payload=payload, key=self._secret_key, algorithm=self._algorithm)
-            return Token(value=jwt_token)
+            return Token(value=jwt_token, expires_at=jwt_payload.exp)
         except Exception as error:
             logger.error(msg=f"Error on encode token", exc_info=error)
             raise EncodeTokenException()
@@ -37,7 +38,7 @@ class TokenService:
     async def revoke_token(self, jwt_token: str):
         payload = await self.decode_token(jwt_token)
         diff = payload.exp - payload.iat
-        await self._denylist_repository.add_token(jti=payload.jti, ttl=diff.days)
+        await self._denylist_repository.add_token(jti=payload.jti, ttl=diff)
 
     async def decode_token(self, jwt_token: str) -> JwtPayload:
         try:
