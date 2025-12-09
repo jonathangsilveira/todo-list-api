@@ -7,10 +7,10 @@ from redis.asyncio import Redis
 from starlette import status
 from starlette.requests import Request
 
-from src.domain.auth.exceptions.expired_access_token import ExpiredAccessTokenException
-from src.domain.auth.exceptions.invalid_access_token import InvalidAccessTokenException
 from src.domain.auth.service.auth_service import AuthService
 from src.domain.password.service.password_service import PasswordService
+from src.domain.token.exception.exceptions import ExpiredTokenException, InvalidTokenException, RevokedTokenException, \
+    TokenException
 from src.domain.token.repository.token_denylist_repository import TokenDenylistRepository
 from src.domain.token.service.token_service import TokenService
 from src.domain.user.exception.user_not_found import UserNotFoundException
@@ -61,12 +61,17 @@ async def get_authorized_user(access_token: str = Depends(oauth2_scheme),
     except UserNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Invalid username",
-            headers={"WWW-Authenticate": "Bearer"}
+            detail="User not found"
         )
-    except (InvalidAccessTokenException, ExpiredAccessTokenException):
+    except (ExpiredTokenException, InvalidTokenException, RevokedTokenException):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not authorized",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except TokenException:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error encoding/decoding access token",
             headers={"WWW-Authenticate": "Bearer"},
         )
