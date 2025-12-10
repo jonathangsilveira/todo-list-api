@@ -3,19 +3,21 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from src.api.health import health
 from src.api.auth.v1 import auth
+from src.api.health import health
 from src.api.tasks.v1 import tasks
-from src.infra.database.redis.client import create_redis_client
+from src.dependency_injection.dependency_container import DependencyContainer
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_dotenv()
-    redis_client = await create_redis_client()
-    app.state.redis_client = redis_client
+    container = DependencyContainer()
+    container.init_resources()
+    redis_client = container.redis_client()
     yield
     await redis_client.aclose()
+    container.shutdown_resources()
 
 
 def create_fastapi_app() -> FastAPI:
