@@ -5,3 +5,4 @@ class TokenStatus(StrEnum):
     VALID = "valid"
     INVALID = "invalid"
     EXPIRED = "expired"
+    REVOKED = "revoked"

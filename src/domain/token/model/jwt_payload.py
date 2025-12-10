@@ -1,8 +1,11 @@
+import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 
-@dataclass
+@dataclass(eq=True, frozen=True, slots=True)
 class JwtPayload:
     sub: str
     exp: datetime
+    iat: datetime = datetime.now(tz=timezone.utc)
+    jti: str = str(uuid.uuid4())
