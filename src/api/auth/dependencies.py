@@ -1,57 +1,22 @@
-import os
-
+from dependency_injector.wiring import inject, Provide
 from fastapi import HTTPException
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
-from redis.asyncio import Redis
 from starlette import status
-from starlette.requests import Request
 
+from src.dependency_injection.dependency_container import DependencyContainer
 from src.domain.auth.service.auth_service import AuthService
-from src.domain.password.service.password_service import PasswordService
 from src.domain.token.exception.exceptions import ExpiredTokenException, InvalidTokenException, RevokedTokenException, \
     TokenException
-from src.domain.token.repository.token_denylist_repository import TokenDenylistRepository
-from src.domain.token.service.token_service import TokenService
 from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user import User
-from src.domain.user.service.user_service import UserService
-from src.infra.password.bcrypt_password_hasher import BcryptPasswordHasher
-from src.infra.token.repository.redis_token_denylist_repository import RedisTokenDenylistRepository
-from src.infra.user.repository.in_memory_user_repository import InMemoryUserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/v1/signin")
 
 
-def get_password_service() -> PasswordService:
-    salt_length = int(os.getenv("GEN_SALT_ROUNDS", 9))
-    return PasswordService(hasher=BcryptPasswordHasher(), salt_length=salt_length)
-
-
-def get_redis_client(request: Request) -> Redis:
-    return request.app.state.redis_client
-
-
-def get_token_denylist_repository(redis_client: Redis = Depends(get_redis_client)) -> TokenDenylistRepository:
-    return RedisTokenDenylistRepository(redis_client=redis_client)
-
-
-def get_token_service(denylist_repository: TokenDenylistRepository = Depends(get_token_denylist_repository)) -> TokenService:
-    secret_key = os.getenv("AUTH_SECRET_KEY")
-    return TokenService(secret_key=secret_key, denylist_repository=denylist_repository)
-
-
-def get_user_service() -> UserService:
-    return UserService(user_repository=InMemoryUserRepository())
-
-def get_auth_service(token_service: TokenService = Depends(get_token_service)) -> AuthService:
-    password_service = get_password_service()
-    user_service = get_user_service()
-    return AuthService(
-        password_service=password_service,
-        token_service=token_service,
-        user_service=user_service
-    )
+@inject
+def get_auth_service(auth_service: AuthService = Depends(Provide[DependencyContainer.auth_service])) -> AuthService:
+    return auth_service
 
 
 async def get_authorized_user(access_token: str = Depends(oauth2_scheme),
@@ -63,10 +28,22 @@ async def get_authorized_user(access_token: str = Depends(oauth2_scheme),
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    except (ExpiredTokenException, InvalidTokenException, RevokedTokenException):
+    except RevokedTokenException:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not authorized",
+            detail="Access token has been revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except InvalidTokenException:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except ExpiredTokenException:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
     except TokenException:
