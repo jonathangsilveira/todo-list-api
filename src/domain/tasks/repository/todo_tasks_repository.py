@@ -16,7 +16,7 @@ class TodoTasksRepository(ABC):
         pass
 
     @abstractmethod
-    async def add_todo_task(self, user_id: str, todo_task: NewTodoTask) -> TodoTask:
+    async def upsert_todo_task(self, user_id: str, todo_task: NewTodoTask) -> TodoTask:
         pass
 
     @abstractmethod
