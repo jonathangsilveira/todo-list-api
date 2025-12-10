@@ -2,11 +2,11 @@ from typing import Optional
 
 
 class DatabaseException(Exception):
-    details: Optional[str]
+    message: Optional[str]
 
-    def __init__(self, details: Optional[str] = None):
-        self.details = details or "Database error"
-        super().__init__(self.details)
+    def __init__(self, message: Optional[str] = None):
+        self.message = message or "Database error"
+        super().__init__(self.message)
 
 class DatabaseWriteException(DatabaseException):
     pass
