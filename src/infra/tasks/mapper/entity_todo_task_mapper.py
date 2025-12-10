@@ -13,7 +13,7 @@ class EntityTodoTaskMapper:
         return TodoTaskEntity(
             id=todo_task_creation.uuid,
             title=todo_task_creation.title,
-            status=todo_task_creation.status.value(),
+            status=todo_task_creation.status.value,
             owner_id=owner_id,
             created_at=todo_task_creation.created_at,
             last_sync_at=datetime.datetime.now(tz=datetime.timezone.utc)
@@ -27,7 +27,7 @@ class EntityTodoTaskMapper:
             status=TodoTaskStatus(todo_task_entity.status),
             created_at=todo_task_entity.created_at,
             updated_at=todo_task_entity.updated_at,
-            last_sync_at=todo_task_entity.last,
+            last_sync_at=todo_task_entity.last_sync_at,
             owner_id=todo_task_entity.owner_id,
             collaborator_ids=[]
         )
@@ -37,7 +37,7 @@ class EntityTodoTaskMapper:
         return TodoTaskEntity(
             id=todo_task.uuid,
             title=todo_task.title,
-            status=todo_task.status.value(),
+            status=todo_task.status.value,
             owner_id=todo_task.owner_id,
             created_at=todo_task.created_at,
             updated_at=todo_task.updated_at,
