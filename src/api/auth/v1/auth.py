@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 from starlette.responses import JSONResponse
 
-from src.api.auth.dependencies import get_auth_service
+from src.api.auth.dependencies import get_auth_service, oauth2_scheme
 from src.api.auth.v1.response.auth_token_response import AuthTokenResponse
 from src.domain.auth.model.auth_credentials import AuthCredentials
 from src.domain.auth.service.auth_service import AuthService
@@ -26,12 +26,9 @@ async def signup(full_name: str = Form(), email: str = Form(),
                  password: str = Form(), auth_service: AuthService = Depends(get_auth_service)):
     try:
         await auth_service.register_new_user(full_name=full_name, email=email, password=password)
-        return JSONResponse(
-            status_code=status.HTTP_201_CREATED,
-            content={"message": "User created!"}
-        )
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content={"message": "User created!"})
     except Exception:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Something went wrong during sign-up"
         )
@@ -59,6 +56,18 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
             detail="Invalid password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Something went wrong!",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+@router.delete(path="/signout", status_code=status.HTTP_204_NO_CONTENT)
+async def signout(access_token: str = Depends(oauth2_scheme), auth_service: AuthService = Depends(get_auth_service)):
+    try:
+        await auth_service.signout(access_token=access_token)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
