@@ -1,7 +1,12 @@
+from dependency_injector.wiring import inject, Provide
+from fastapi.params import Depends
+
+from src.dependency_injection.dependency_container import DependencyContainer
 from src.domain.tasks.service.todo_tasks_service import TodoTasksService
-from src.infra.tasks.adapter.repository.in_memory_todo_tasks_repository import InMemoryTodoTasksRepository
 
 
-def get_todo_tasks_service() -> TodoTasksService:
-    repository = InMemoryTodoTasksRepository()
-    return TodoTasksService(todo_tasks_repository=repository)
+@inject
+def get_todo_tasks_service(
+        todo_task_service: TodoTasksService = Depends(Provide[DependencyContainer.todo_tasks_service])
+) -> TodoTasksService:
+    return todo_task_service
