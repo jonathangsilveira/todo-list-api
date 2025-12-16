@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+from src.core.exception.exceptions import NotFoundException
 from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user_models import User, UserCreation, UserUpdate
 from src.domain.user.repository.user_repository import UserRepository
@@ -26,7 +27,7 @@ class InMemoryUserRepository(UserRepository):
     async def set_user(self, user_update: UserUpdate) -> User:
         user = self._users.get(user_update.email)
         if not user:
-            raise UserNotFoundException()
+            raise NotFoundException(message=f"User ID {user_update.id} not found!")
         user.full_name = user_update.full_name
         user.password = user_update.password
         user.is_active = user_update.is_active
