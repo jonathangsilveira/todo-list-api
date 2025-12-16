@@ -1,7 +1,7 @@
-from src.core.exception.exceptions import UnauthorizedException
+from src.core.exception.exceptions import UnauthorizedException, InternalErrorException
 
 
-class TokenException(UnauthorizedException):
+class TokenException(InternalErrorException):
     pass
 
 
@@ -9,11 +9,11 @@ class InvalidTokenException(TokenException):
     pass
 
 
-class ExpiredTokenException(TokenException):
+class ExpiredTokenException(UnauthorizedException):
     pass
 
 
-class RevokedTokenException(TokenException):
+class RevokedTokenException(UnauthorizedException):
     pass
 
 
