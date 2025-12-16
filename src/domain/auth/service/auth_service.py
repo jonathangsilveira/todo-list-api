@@ -7,7 +7,6 @@ from src.domain.password.service.password_service import PasswordService
 from src.domain.token.model.jwt_payload import JwtPayload
 from src.domain.token.model.token import Token
 from src.domain.token.service.token_service import TokenService
-from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user_models import User, UserCreation
 from src.domain.user.service.user_service import UserService
 
@@ -22,8 +21,6 @@ class AuthService:
 
     async def authorize_login(self, auth_credentials: AuthCredentials) -> AuthToken:
         user = await self._user_service.get_user_by_email(auth_credentials.email)
-        if not user:
-            raise UserNotFoundException()
 
         is_valid_password = self._password_service.is_valid_password(auth_credentials.password, user.password)
         if not is_valid_password:
@@ -50,10 +47,7 @@ class AuthService:
 
     async def get_current_user_by_access_token(self, access_token: str) -> User:
         jwt_payload = await self._token_service.decode_token(access_token)
-        user = await self._user_service.get_user_by_email(jwt_payload.sub)
-        if not user:
-            raise UserNotFoundException()
-        return user
+        return await self._user_service.get_user_by_email(jwt_payload.sub)
 
     async def signout(self, access_token: str):
         await self._token_service.revoke_token(access_token)
