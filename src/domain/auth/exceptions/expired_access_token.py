@@ -1,4 +1,0 @@
-
-
-class ExpiredAccessTokenException(Exception):
-    pass

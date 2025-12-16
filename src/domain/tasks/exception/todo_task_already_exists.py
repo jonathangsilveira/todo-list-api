@@ -1,4 +1,0 @@
-
-
-class TodoTaskAlreadyExistsException(Exception):
-    pass
