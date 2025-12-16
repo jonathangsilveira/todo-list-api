@@ -23,3 +23,7 @@ class ConflictException(AppException):
 
 class InternalErrorException(AppException):
     pass
+
+
+class UnauthorizedException(AppException):
+    pass
