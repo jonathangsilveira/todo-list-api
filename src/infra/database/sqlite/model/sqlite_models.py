@@ -11,8 +11,8 @@ class UserEntity(BaseEntity):
     __tablename__ = "users"
 
     id = Column(String, primary_key=True, unique=True)
+    email = Column(String(100), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     created_at = Column(DateTime, unique=False, nullable=False)
     last_update_at = Column(DateTime, unique=False, nullable=True)
