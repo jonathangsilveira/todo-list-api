@@ -40,7 +40,7 @@ async def get_todo_task_by_uuid(todo_task_uuid: str = Path(alias="uuid"),
     )
 
 
-@router.post(path="/task/new", status_code=status.HTTP_201_CREATED, response_model=TaskResponse)
+@router.post(path="/task/new", status_code=status.HTTP_200_OK, response_model=TaskResponse)
 async def add_todo_task(new_todo_task_input: NewTodoTaskInput,
                         authorized_user: User = Depends(get_authorized_user),
                         todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
@@ -48,7 +48,7 @@ async def add_todo_task(new_todo_task_input: NewTodoTaskInput,
     created_task = await todo_tasks_service.upsert_todo_task(user_id=authorized_user.id, todo_task=new_todo_task)
     response = TaskResponse.from_domain(created_task)
     return JSONResponse(
-        status_code=status.HTTP_201_CREATED,
+        status_code=status.HTTP_200_OK,
         content=response.model_dump(exclude_none=True)
     )
 
@@ -60,7 +60,7 @@ async def mark_todo_task_as_done(todo_task_uuid: str = Path(alias="uuid"),
     response = TaskResponse.from_domain(updated_task)
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content=response
+        content=response.model_dump(exclude_none=True)
     )
 
 
