@@ -25,7 +25,7 @@ def setup_exception_handling(app: FastAPI):
     @app.exception_handler(exc_class_or_status_code=NotFoundException)
     def not_found_handler(request: Request, exc: AppException) -> JSONResponse:
         return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             content={"message": exc.message},
         )
 
