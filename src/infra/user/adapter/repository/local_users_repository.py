@@ -1,16 +1,13 @@
-import traceback
 import uuid
 from datetime import datetime, timezone
-from sqlite3 import IntegrityError
 from typing import Optional
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
 from src.core.exception.exceptions import InternalErrorException, NotFoundException, ConflictException
-from src.domain.user.exception.user_not_found import UserNotFoundException
 from src.domain.user.model.user_models import UserCreation, User, UserUpdate
 from src.domain.user.repository.user_repository import UserRepository
-from src.infra.database.exception.exceptions import DatabaseWriteException, DatabaseReadException
 from src.infra.database.sqlite.model.sqlite_models import UserEntity
 from src.infra.database.sqlite.session.async_session_factory import AsyncSessionFactory
 from src.infra.user.mapper.entity_user_mapper import EntityUserMapper
@@ -38,14 +35,11 @@ class LocalUsersRepository(UserRepository):
             user_entity = EntityUserMapper.new_user(generated_id, user_creation)
 
             async for session in self._async_session_factory.generate_session():
-                try:
-                    session.add(user_entity)
-                except IntegrityError as exc:
-                    raise ConflictException(message=f"User with e-mail {user_creation.email} already exists!") from exc
+                session.add(user_entity)
 
             return EntityUserMapper.from_entity(user_entity)
-        except ConflictException:
-            raise
+        except IntegrityError as exc:
+            raise ConflictException(message=f"User with e-mail {user_creation.email} already exists!") from exc
         except Exception as exc:
             raise InternalErrorException(message=f"Error adding user {user_creation.full_name}") from exc
 
