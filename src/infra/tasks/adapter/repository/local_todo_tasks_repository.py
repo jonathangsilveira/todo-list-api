@@ -43,12 +43,17 @@ class LocalTodoTasksRepository(TodoTasksRepository):
 
     async def upsert_todo_task(self, user_id: str, todo_task: NewTodoTask) -> TodoTask:
         try:
-            todo_task_entity = EntityTodoTaskMapper.new_entity(todo_task, user_id)
-
             async for session in self._async_session_generator.generate_session():
-                try:
+                statement = select(TodoTaskEntity).where(todo_task.uuid == TodoTaskEntity.id)
+                results = await session.execute(statement)
+                todo_task_entity = results.scalars().first()
+
+                if not todo_task_entity:
+                    todo_task_entity = EntityTodoTaskMapper.new_entity(todo_task, user_id)
                     session.add(todo_task_entity)
-                except IntegrityError:
+                else:
+                    todo_task_entity.title = todo_task.title
+                    todo_task_entity.status = todo_task.status.value
                     todo_task_entity.updated_at = datetime.now(tz=timezone.utc)
                     todo_task_entity.last_sync_at = datetime.now(tz=timezone.utc)
 
@@ -64,7 +69,7 @@ class LocalTodoTasksRepository(TodoTasksRepository):
                 if not todo_task_entity:
                     raise NotFoundException(message=f"TODO task {uuid} not found!")
 
-                todo_task_entity.status = TodoTaskStatus.DONE.value()
+                todo_task_entity.status = TodoTaskStatus.DONE.value
                 todo_task_entity.updated_at = datetime.now(tz=timezone.utc)
                 todo_task_entity.last_sync_at = datetime.now(tz=timezone.utc)
 
