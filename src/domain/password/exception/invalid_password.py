@@ -1,4 +1,5 @@
+from src.core.exception.exceptions import BusinessException
 
 
-class InvalidPasswordException(Exception):
+class InvalidPasswordException(BusinessException):
     pass

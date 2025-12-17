@@ -1,19 +1,25 @@
+from src.core.exception.exceptions import UnauthorizedException, InternalErrorException
 
 
-class TokenException(Exception):
+class TokenException(InternalErrorException):
     pass
 
-class InvalidTokenException(TokenException):
+
+class InvalidTokenException(UnauthorizedException):
     pass
 
-class ExpiredTokenException(TokenException):
+
+class ExpiredTokenException(UnauthorizedException):
     pass
 
-class RevokedTokenException(TokenException):
+
+class RevokedTokenException(UnauthorizedException):
     pass
+
 
 class DecodeTokenException(TokenException):
     pass
+
 
 class EncodeTokenException(TokenException):
     pass
