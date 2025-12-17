@@ -5,7 +5,7 @@ class TokenException(InternalErrorException):
     pass
 
 
-class InvalidTokenException(TokenException):
+class InvalidTokenException(UnauthorizedException):
     pass
 
 
