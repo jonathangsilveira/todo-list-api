@@ -11,7 +11,8 @@ class RedisTokenDenylistRepository(TokenDenylistRepository):
 
     async def token_exists(self, jti: str) -> bool:
         try:
-            if await self._redis_client.get(jti):
+            key = self._generate_redis_key(jti)
+            if await self._redis_client.get(key):
                 return True
             return False
         except Exception as exc:
@@ -19,6 +20,10 @@ class RedisTokenDenylistRepository(TokenDenylistRepository):
 
     async def add_token(self, jti: str, ttl: int):
         try:
-            await self._redis_client.setex(name=jti, time=ttl, value="revoked")
+            await self._redis_client.setex(name=self._generate_redis_key(jti), time=ttl, value="revoked")
         except Exception as exc:
             raise InternalErrorException(message="Error adding token to denylist") from exc
+
+    @staticmethod
+    def _generate_redis_key(value: str) -> str:
+        return f"token-denylist-{value}"
