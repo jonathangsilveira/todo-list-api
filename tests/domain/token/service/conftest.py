@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, AsyncMock
 
 import pytest
@@ -17,23 +17,28 @@ def token_denylist_repository_mock() -> TokenDenylistRepository:
     return repo
 
 
-@pytest_asyncio.fixture(scope="package")
+@pytest_asyncio.fixture(scope="class")
 def token_service(token_denylist_repository_mock: TokenDenylistRepository) -> TokenService:
     return TokenService(denylist_repository=token_denylist_repository_mock, secret_key="chablau")
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="function")
 def jwt_payload_stub() -> JwtPayload:
+    issued_at = datetime.now()
     return JwtPayload(
         sub="chablau@chablau.com",
-        iat=datetime.fromtimestamp(1765123065),
-        exp=datetime.fromtimestamp(1765209465),
+        iat=issued_at,
+        exp=issued_at + timedelta(days=1),
         jti="04302e0b-3ba1-4c28-ab3e-2b1de6a4d22b"
     )
 
-@pytest.fixture(scope="package")
-def jwt_token_stub() -> str:
-    header = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
-    payload = 'eyJzdWIiOiJjaGFibGF1QGNoYWJsYXUuY29tIiwiZXhwIjoxNzY1MjA5NDY1LCJpYXQiOjE3NjUxMjMwNjUsImp0aSI6IjA0MzAyZTBiLTNiYTEtNGMyOC1hYjNlLTJiMWRlNmE0ZDIyYiJ9'
-    signature = 'qDJhWobkrCZNuGOAiIduJ7ajzGMc4K6pt0AKkvOaZmM'
-    return f"{header}.{payload}.{signature}"
+
+@pytest.fixture(scope="function")
+def expired_jwt_payload_stub() -> JwtPayload:
+    issued_at = datetime.now()
+    return JwtPayload(
+        sub="chablau@chablau.com",
+        iat=issued_at,
+        exp=issued_at - timedelta(seconds=15),
+        jti="jti-123"
+    )

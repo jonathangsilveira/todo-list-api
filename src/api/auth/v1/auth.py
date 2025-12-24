@@ -41,3 +41,9 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends(),
 @router.delete(path="/signout", status_code=status.HTTP_204_NO_CONTENT)
 async def signout(access_token: str = Depends(oauth2_scheme), auth_service: AuthService = Depends(get_auth_service)):
     await auth_service.signout(access_token=access_token)
+
+
+@router.post(path="/token/refresh", status_code=status.HTTP_200_OK)
+async def token_refresh(refresh_token: str,
+                        auth_service: AuthService = Depends(get_auth_service)):
+    await auth_service.refresh_token(refresh_token=refresh_token)
