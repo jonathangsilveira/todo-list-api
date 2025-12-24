@@ -41,4 +41,4 @@ setup_redis:
 		redis:8.4.0)
 
 run:
-	uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+	uvicorn src.app:app --host 0.0.0.0 --port 8000 --log-config log_config.yaml --reload
