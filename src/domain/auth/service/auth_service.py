@@ -52,6 +52,18 @@ class AuthService:
     async def signout(self, access_token: str):
         await self._token_service.revoke_token(access_token)
 
+    async def refresh_token(self, refresh_token: str) -> AuthToken:
+        jwt_payload = await self._token_service.decode_token(refresh_token)
+
+        access_token = await self._create_token(subject=jwt_payload.sub, ttl=timedelta(days=1))
+        expires_at_millis = int(access_token.expires_at.timestamp() * 1000)
+
+        return AuthToken(
+            refresh_token=refresh_token,
+            access_token=access_token.value,
+            expires_at=expires_at_millis
+        )
+
     async def _create_token(self, subject: str, ttl: timedelta) -> Token:
         issued_at = datetime.now(timezone.utc)
         expires_at = issued_at + ttl
