@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get(path="/all", status_code=status.HTTP_200_OK, response_model=[TaskResponse])
+@router.get(path="/all", status_code=status.HTTP_200_OK, response_model=TaskResponse)
 async def get_all_todo_tasks(authorized_user: User = Depends(get_authorized_user),
                              todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
     todo_tasks = await todo_tasks_service.get_todo_tasks_by_user(user_id=authorized_user.id)
