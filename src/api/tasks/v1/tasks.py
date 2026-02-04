@@ -5,7 +5,7 @@ from starlette.responses import JSONResponse
 
 from src.api.auth.dependencies import get_authorized_user
 from src.api.tasks.dependencies import get_todo_tasks_service
-from src.api.tasks.request.new_todo_task_input import NewTodoTaskInput
+from src.api.tasks.request.todo_task_input import NewTodoTaskInput
 from src.api.tasks.response.task import TasksResponse, TaskResponse
 from src.domain.tasks.service.todo_tasks_service import TodoTasksService
 from src.domain.user.model.user_models import User
