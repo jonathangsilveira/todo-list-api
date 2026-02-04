@@ -6,9 +6,10 @@ from pydantic import BaseModel
 
 from src.domain.tasks.model.new_todo_task import NewTodoTask
 from src.domain.tasks.model.todo_task_status import TodoTaskStatus
+from src.ext.datetime.datetime import from_timestamp_millis_utc
 
 
-class NewTodoTaskInput(BaseModel):
+class TodoTaskInput(BaseModel):
     title: str
     status: Optional[Literal['PENDING', 'DONE', 'REMOVED']] = "PENDING"
     uuid: Optional[str] = None
@@ -20,6 +21,6 @@ class NewTodoTaskInput(BaseModel):
             title=self.title,
             status=TodoTaskStatus(value=self.status),
             uuid=self.uuid or str(uuid.uuid4()),
-            created_at=self.created_at or datetime.now(timezone.utc),
-            updated_at=datetime.fromtimestamp(timestamp=self.updated_at) if self.updated_at else None
+            created_at=from_timestamp_millis_utc(self.created_at) or datetime.now(timezone.utc),
+            updated_at=from_timestamp_millis_utc(self.updated_at) if self.updated_at else None
         )
