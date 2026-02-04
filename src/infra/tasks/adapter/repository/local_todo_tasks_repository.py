@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
 from src.core.exception.exceptions import NotFoundException, InternalErrorException
