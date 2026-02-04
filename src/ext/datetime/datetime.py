@@ -16,4 +16,5 @@ def from_timestamp_millis_utc(millis: int) -> datetime:
     :param millis: Value in milliseconds.
     :return: Datetime with UTC timezone.
     """
-    return datetime.fromtimestamp(timestamp=millis / 1000, tz=timezone.utc)
+    timestamp_seconds = millis / 1000
+    return datetime.fromtimestamp(timestamp=timestamp_seconds, tz=timezone.utc)
