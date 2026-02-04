@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 from src.domain.tasks.model.todo_task_status import TodoTaskStatus
 
@@ -10,3 +11,4 @@ class NewTodoTask:
     title: str
     status: TodoTaskStatus
     created_at: datetime
+    updated_at: Optional[datetime] = None
