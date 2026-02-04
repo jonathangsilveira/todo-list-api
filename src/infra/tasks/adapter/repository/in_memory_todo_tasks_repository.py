@@ -14,6 +14,10 @@ class InMemoryTodoTasksRepository(TodoTasksRepository):
     async def get_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
         return [todo_task for todo_task in self._tasks_by_uuid.values() if todo_task.owner_id == user_id]
 
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        all_todo_tasks = await self.get_todo_tasks_by_user(user_id)
+        return [todo_task for todo_task in all_todo_tasks if todo_task.status != TodoTaskStatus.REMOVED]
+
     async def get_todo_task_by_uuid(self, uuid: str) -> Optional[TodoTask]:
         return self._tasks_by_uuid.get(uuid)
 
@@ -25,20 +29,11 @@ class InMemoryTodoTasksRepository(TodoTasksRepository):
             owner_id=user_id,
             collaborator_ids=[],
             created_at=todo_task.created_at,
-            updated_at=datetime.now(tz=timezone.utc),
+            updated_at=todo_task.updated_at,
             last_sync_at=datetime.now(tz=timezone.utc)
         )
         self._tasks_by_uuid[todo_task.uuid] = local_todo_task
         return local_todo_task
-
-    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
-        todo_task = self._tasks_by_uuid.get(uuid)
-        if not todo_task:
-            raise NotFoundException(message=f"TODO task {uuid} not found!")
-        todo_task.status = TodoTaskStatus.DONE
-        todo_task.updated_at = datetime.now(timezone.utc)
-        todo_task.last_sync_at = datetime.now(timezone.utc)
-        return todo_task
 
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
         if uuid not in self._tasks_by_uuid:

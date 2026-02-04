@@ -16,6 +16,7 @@ class EntityTodoTaskMapper:
             status=todo_task_creation.status.value,
             owner_id=owner_id,
             created_at=todo_task_creation.created_at,
+            updated_at=todo_task_creation.updated_at,
             last_sync_at=datetime.datetime.now(tz=datetime.timezone.utc)
         )
 

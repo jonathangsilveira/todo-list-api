@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
 from src.core.exception.exceptions import NotFoundException, InternalErrorException
@@ -23,6 +22,17 @@ class LocalTodoTasksRepository(TodoTasksRepository):
         try:
             async for session in self._async_session_generator.generate_session():
                 statement = select(TodoTaskEntity).where(user_id == TodoTaskEntity.owner_id)
+                results = await session.execute(statement)
+                todo_task_entity = results.scalars().all()
+                return [EntityTodoTaskMapper.from_entity(entity) for entity in todo_task_entity]
+            return []
+        except Exception as exc:
+            raise InternalErrorException(message=f"Error fetching TODO tasks by user id {user_id}") from exc
+
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        try:
+            async for session in self._async_session_generator.generate_session():
+                statement = select(TodoTaskEntity).where(user_id == TodoTaskEntity.owner_id, TodoTaskEntity.status != TodoTaskStatus.REMOVED.value)
                 results = await session.execute(statement)
                 todo_task_entity = results.scalars().all()
                 return [EntityTodoTaskMapper.from_entity(entity) for entity in todo_task_entity]
@@ -54,30 +64,12 @@ class LocalTodoTasksRepository(TodoTasksRepository):
                 else:
                     todo_task_entity.title = todo_task.title
                     todo_task_entity.status = todo_task.status.value
-                    todo_task_entity.updated_at = datetime.now(tz=timezone.utc)
+                    todo_task_entity.updated_at = todo_task.updated_at
                     todo_task_entity.last_sync_at = datetime.now(tz=timezone.utc)
 
             return EntityTodoTaskMapper.from_entity(todo_task_entity)
         except Exception as exc:
             raise InternalErrorException(message=f"Error upserting TODO task {todo_task.uuid}") from exc
-
-    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
-        try:
-            async for session in self._async_session_generator.generate_session():
-                todo_task_entity = await session.get(TodoTaskEntity, uuid)
-
-                if not todo_task_entity:
-                    raise NotFoundException(message=f"TODO task {uuid} not found!")
-
-                todo_task_entity.status = TodoTaskStatus.DONE.value
-                todo_task_entity.updated_at = datetime.now(tz=timezone.utc)
-                todo_task_entity.last_sync_at = datetime.now(tz=timezone.utc)
-
-            return EntityTodoTaskMapper.from_entity(todo_task_entity)
-        except NotFoundException:
-            raise
-        except Exception as exc:
-            raise InternalErrorException(message=f"Error updating TODO task by UUID: {uuid}") from exc
 
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
         try:

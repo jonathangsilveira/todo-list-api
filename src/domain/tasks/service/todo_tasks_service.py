@@ -21,6 +21,14 @@ class TodoTasksService:
             logger.error(msg=f"Error fetching TODO task by user: {user_id}", exc_info=exc)
             raise exc
 
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        logger.info(msg=f"Fetching active TODO tasks by user id: {user_id}")
+        try:
+            return await self._todo_tasks_repository.get_active_todo_tasks_by_user(user_id)
+        except InternalErrorException as exc:
+            logger.error(msg=f"Error fetching active TODO task by user: {user_id}", exc_info=exc)
+            raise exc
+
     async def get_todo_task_by_uuid(self, uuid: str) -> TodoTask:
         logger.info(msg=f"Fetch TODO tasks by uuid: {uuid}")
         try:
@@ -41,13 +49,6 @@ class TodoTasksService:
             return await self._todo_tasks_repository.upsert_todo_task(user_id, todo_task)
         except InternalErrorException as exc:
             logger.error(msg=f"Error upserting TODO task {todo_task.uuid}", exc_info=exc)
-            raise exc
-
-    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
-        try:
-            return await self._todo_tasks_repository.mark_todo_task_as_done(uuid)
-        except InternalErrorException as exc:
-            logger.error(msg=f"Error updating TODO task to DONE by uuid: {uuid}", exc_info=exc)
             raise exc
 
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
