@@ -43,13 +43,6 @@ class TodoTasksService:
             logger.error(msg=f"Error upserting TODO task {todo_task.uuid}", exc_info=exc)
             raise exc
 
-    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
-        try:
-            return await self._todo_tasks_repository.mark_todo_task_as_done(uuid)
-        except InternalErrorException as exc:
-            logger.error(msg=f"Error updating TODO task to DONE by uuid: {uuid}", exc_info=exc)
-            raise exc
-
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
         try:
             await self._todo_tasks_repository.remove_todo_task_by_uuid(uuid)

@@ -52,18 +52,6 @@ async def add_todo_task(new_todo_task_input: NewTodoTaskInput,
         content=response.model_dump(exclude_none=True)
     )
 
-@router.patch(path="/task/{uuid}/done", status_code=status.HTTP_200_OK, response_model=TaskResponse)
-async def mark_todo_task_as_done(todo_task_uuid: str = Path(alias="uuid"),
-                                 authorized_user: User = Depends(get_authorized_user),
-                                 todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
-    updated_task = await todo_tasks_service.mark_todo_task_as_done(uuid=todo_task_uuid)
-    response = TaskResponse.from_domain(updated_task)
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content=response.model_dump(exclude_none=True)
-    )
-
-
 @router.delete(path="/task/{uuid}/remove", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_todo_task(todo_task_uuid: str = Path(alias="uuid"),
                            authorized_user: User = Depends(get_authorized_user),

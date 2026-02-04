@@ -20,9 +20,5 @@ class TodoTasksRepository(ABC):
         pass
 
     @abstractmethod
-    async def mark_todo_task_as_done(self, uuid: str) -> TodoTask:
-        pass
-
-    @abstractmethod
     async def remove_todo_task_by_uuid(self, uuid: str) -> None:
         pass
