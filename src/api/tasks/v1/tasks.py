@@ -28,6 +28,17 @@ async def get_all_todo_tasks(authorized_user: User = Depends(get_authorized_user
     )
 
 
+@router.get(path="/active", status_code=status.HTTP_200_OK, response_model=TaskResponse)
+async def get_active_todo_tasks(authorized_user: User = Depends(get_authorized_user),
+                                todo_tasks_service: TodoTasksService = Depends(get_todo_tasks_service)):
+    active_todo_tasks = await todo_tasks_service.get_active_todo_tasks_by_user(user_id=authorized_user.id)
+    response = [TaskResponse.from_domain(task).model_dump(exclude_none=True) for task in active_todo_tasks]
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=response
+    )
+
+
 @router.get(path="/task/{uuid}", status_code=status.HTTP_200_OK, response_model=TaskResponse)
 async def get_todo_task_by_uuid(todo_task_uuid: str = Path(alias="uuid"),
                                 authorized_user: User = Depends(get_authorized_user),

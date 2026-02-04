@@ -14,6 +14,10 @@ class InMemoryTodoTasksRepository(TodoTasksRepository):
     async def get_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
         return [todo_task for todo_task in self._tasks_by_uuid.values() if todo_task.owner_id == user_id]
 
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        all_todo_tasks = await self.get_todo_tasks_by_user(user_id)
+        return [todo_task for todo_task in all_todo_tasks if todo_task.status != TodoTaskStatus.REMOVED]
+
     async def get_todo_task_by_uuid(self, uuid: str) -> Optional[TodoTask]:
         return self._tasks_by_uuid.get(uuid)
 

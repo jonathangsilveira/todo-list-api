@@ -6,6 +6,7 @@ from sqlalchemy.future import select
 from src.core.exception.exceptions import NotFoundException, InternalErrorException
 from src.domain.tasks.model.new_todo_task import NewTodoTask
 from src.domain.tasks.model.todo_task import TodoTask
+from src.domain.tasks.model.todo_task_status import TodoTaskStatus
 from src.domain.tasks.repository.todo_tasks_repository import TodoTasksRepository
 from src.infra.database.sqlite.model.sqlite_models import TodoTaskEntity
 from src.infra.database.sqlite.session.async_session_factory import AsyncSessionFactory
@@ -21,6 +22,17 @@ class LocalTodoTasksRepository(TodoTasksRepository):
         try:
             async for session in self._async_session_generator.generate_session():
                 statement = select(TodoTaskEntity).where(user_id == TodoTaskEntity.owner_id)
+                results = await session.execute(statement)
+                todo_task_entity = results.scalars().all()
+                return [EntityTodoTaskMapper.from_entity(entity) for entity in todo_task_entity]
+            return []
+        except Exception as exc:
+            raise InternalErrorException(message=f"Error fetching TODO tasks by user id {user_id}") from exc
+
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        try:
+            async for session in self._async_session_generator.generate_session():
+                statement = select(TodoTaskEntity).where(user_id == TodoTaskEntity.owner_id, TodoTaskEntity.status != TodoTaskStatus.REMOVED.value)
                 results = await session.execute(statement)
                 todo_task_entity = results.scalars().all()
                 return [EntityTodoTaskMapper.from_entity(entity) for entity in todo_task_entity]

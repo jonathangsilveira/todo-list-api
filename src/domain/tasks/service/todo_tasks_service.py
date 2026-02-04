@@ -21,6 +21,14 @@ class TodoTasksService:
             logger.error(msg=f"Error fetching TODO task by user: {user_id}", exc_info=exc)
             raise exc
 
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        logger.info(msg=f"Fetching active TODO tasks by user id: {user_id}")
+        try:
+            return await self._todo_tasks_repository.get_active_todo_tasks_by_user(user_id)
+        except InternalErrorException as exc:
+            logger.error(msg=f"Error fetching active TODO task by user: {user_id}", exc_info=exc)
+            raise exc
+
     async def get_todo_task_by_uuid(self, uuid: str) -> TodoTask:
         logger.info(msg=f"Fetch TODO tasks by uuid: {uuid}")
         try:

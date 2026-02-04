@@ -12,6 +12,10 @@ class TodoTasksRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_active_todo_tasks_by_user(self, user_id: str) -> list[TodoTask]:
+        pass
+
+    @abstractmethod
     async def get_todo_task_by_uuid(self, uuid: str) -> Optional[TodoTask]:
         pass
 
