@@ -54,7 +54,7 @@ class LocalTodoTasksRepository(TodoTasksRepository):
                 else:
                     todo_task_entity.title = todo_task.title
                     todo_task_entity.status = todo_task.status.value
-                    todo_task_entity.updated_at = datetime.now(tz=timezone.utc)
+                    todo_task_entity.updated_at = todo_task.updated_at
                     todo_task_entity.last_sync_at = datetime.now(tz=timezone.utc)
 
             return EntityTodoTaskMapper.from_entity(todo_task_entity)
