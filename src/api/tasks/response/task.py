@@ -11,8 +11,8 @@ class TaskResponse(BaseModel):
     title: str
     status: str
     created_at: int
-    updated_at: int
     last_sync_at: int
+    updated_at: Optional[int]
 
     @staticmethod
     def from_domain(todo_task: TodoTask) -> "TaskResponse":
@@ -21,8 +21,8 @@ class TaskResponse(BaseModel):
             title=todo_task.title,
             status=todo_task.status,
             created_at=to_timestamp_millis(todo_task.created_at),
-            updated_at=to_timestamp_millis(todo_task.updated_at),
-            last_sync_at=to_timestamp_millis(todo_task.last_sync_at)
+            last_sync_at=to_timestamp_millis(todo_task.last_sync_at),
+            updated_at=to_timestamp_millis(todo_task.updated_at) if todo_task.updated_at else None
         )
 
 class TasksResponse(BaseModel):

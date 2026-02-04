@@ -21,6 +21,6 @@ class TodoTaskInput(BaseModel):
             title=self.title,
             status=TodoTaskStatus(value=self.status),
             uuid=self.uuid or str(uuid.uuid4()),
-            created_at=from_timestamp_millis_utc(self.created_at) or datetime.now(timezone.utc),
+            created_at=from_timestamp_millis_utc(self.created_at) if self.created_at else datetime.now(timezone.utc),
             updated_at=from_timestamp_millis_utc(self.updated_at) if self.updated_at else None
         )
